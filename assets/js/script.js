@@ -1,7 +1,8 @@
 var pageContentEl = document.querySelector("#page-content");
-var timer = 75;
-var questionAnswerArr = [
-    {
+var timeVal = 75;
+var questionIndex = 0;
+var timerEl = document.querySelector(".timer");
+var questionAnswerArr = [{
         "q": "Arrays in JavaScript are 1 indexed",
         "a": "true",
         "c": ["true", "false"]
@@ -33,22 +34,66 @@ var questionAnswerArr = [
     }
 ]
 
+var timerValue = setInterval(function() {
+    if (timeVal > 1) {
+        timerEl.textContent = "Time: " + timeVal;
+        timeVal--;
+    } else if (timeVal == 0) {
+        return false;
+    }
+}, 1000);
+
 // question argument (num) to know which question to access in array
-var displayQuestion = function(question) {
+var displayQuestion = function () {
+    pageReset();
     var questionEl = document.createElement("div");
     var choiceListEl = document.createElement("ul");
-    questionEl.innerText = questionAnswerArr[0].q;
+    questionEl.innerText = questionAnswerArr[questionIndex].q;
     questionEl.className = "question";
     pageContentEl.appendChild(questionEl);
-    for (var i = 0; i < questionAnswerArr[question].c.length; i++) {
+    for (var i = 0; i < questionAnswerArr[questionIndex].c.length; i++) {
         var choicesEl = document.createElement("li");
         var choiceBtn = document.createElement("button");
-        choiceBtn.textContent = questionAnswerArr[question]["c"][i];
-        choiceBtn.value = questionAnswerArr[question]["c"][i];
-        console.dir(choiceBtn);
+        choiceBtn.className = "answer-button"
+        choiceBtn.textContent = questionAnswerArr[questionIndex]["c"][i];
+        choiceBtn.value = questionAnswerArr[questionIndex]["c"][i];
         choicesEl.appendChild(choiceBtn);
         choiceListEl.appendChild(choicesEl);
     }
     pageContentEl.appendChild(choiceListEl);
+    questionIndex++;
+
 }
-displayQuestion(0);
+// evaluate input from user to determine an answer was clicked and if its the correct answer
+var inputEval = function (event) {
+    if (event.target.className === "answer-button") {
+        if (event.target.value === questionAnswerArr[questionIndex]["a"]) {
+            return true;
+        }
+    }
+
+}
+
+var pageReset = function () {
+    pageContentEl.innerHTML = "";
+}
+
+var welcomeScreen = function () {
+    var welcomeEl = document.createElement("h1");
+    welcomeEl.textContent = "Coding Quiz Challenge";
+    var descriptionEl = document.createElement("p");
+    descriptionEl.textContent = "This is a timed JavaScript quiz.  You will have 75 seconds to answer 6 questions.  Good Luck!";
+    var startBtn = document.createElement("button");
+    startBtn.textContent = "Start Quiz";
+    pageContentEl.appendChild(welcomeEl);
+    pageContentEl.appendChild(descriptionEl);
+    pageContentEl.appendChild(startBtn);
+    startBtn.addEventListener("click", displayQuestion);
+}
+
+welcomeScreen();
+
+pageContentEl.addEventListener("click", inputEval)
+for (var i = 0; i < questionAnswerArr.length; i++) {
+    displayQuestion();
+}
