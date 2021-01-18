@@ -2,7 +2,13 @@ var pageContentEl = document.querySelector("#page-content");
 var timeVal = 75;
 var questionIndex = 0;
 var timerEl = document.querySelector(".timer");
-var questionAnswerArr = [{
+var questionAnswerArr = [
+    {
+        "title": "Welcome to a JavaScript Quiz",
+        "message": "This is a timed JavaScript quiz.  You will have 75 seconds to answer 6 questions.  Good Luck!",
+        "begin" : "Begin"
+    },
+    {
         "q": "Arrays in JavaScript are 1 indexed",
         "a": "true",
         "c": ["true", "false"]
@@ -39,13 +45,21 @@ var timerValue = setInterval(function() {
         timerEl.textContent = "Time: " + timeVal;
         timeVal--;
     } else if (timeVal == 0) {
-        return false;
+        clearInterval(timerValue);
     }
 }, 1000);
 
 // question argument (num) to know which question to access in array
 var displayQuestion = function () {
-    pageReset();
+    pageContentEl.innerHTML = "";
+    if (questionIndex == 0) {
+        var welcomeEl = document.createElement("h1");
+        var descriptionEl = document.createElement("p");
+        var startBtn = document.createElement("button");
+        welcomeEl.textContent = questionAnswerArr[0].title;
+        descriptionEl.textContent = questionAnswerArr[0].message;
+        startBtn.textContent = questionAnswerArr[0].begin;
+    } else if (timeVal > 0 && questionIndex < questionAnswerArr.length) {
     var questionEl = document.createElement("div");
     var choiceListEl = document.createElement("ul");
     questionEl.innerText = questionAnswerArr[questionIndex].q;
@@ -54,6 +68,7 @@ var displayQuestion = function () {
     for (var i = 0; i < questionAnswerArr[questionIndex].c.length; i++) {
         var choicesEl = document.createElement("li");
         var choiceBtn = document.createElement("button");
+        choiceBtn.id = i;
         choiceBtn.className = "answer-button"
         choiceBtn.textContent = questionAnswerArr[questionIndex]["c"][i];
         choiceBtn.value = questionAnswerArr[questionIndex]["c"][i];
@@ -61,7 +76,7 @@ var displayQuestion = function () {
         choiceListEl.appendChild(choicesEl);
     }
     pageContentEl.appendChild(choiceListEl);
-    questionIndex++;
+
 
 }
 // evaluate input from user to determine an answer was clicked and if its the correct answer
@@ -74,16 +89,13 @@ var inputEval = function (event) {
 
 }
 
-var pageReset = function () {
-    pageContentEl.innerHTML = "";
-}
 
 var welcomeScreen = function () {
-    var welcomeEl = document.createElement("h1");
+    
     welcomeEl.textContent = "Coding Quiz Challenge";
-    var descriptionEl = document.createElement("p");
+    
     descriptionEl.textContent = "This is a timed JavaScript quiz.  You will have 75 seconds to answer 6 questions.  Good Luck!";
-    var startBtn = document.createElement("button");
+    
     startBtn.textContent = "Start Quiz";
     pageContentEl.appendChild(welcomeEl);
     pageContentEl.appendChild(descriptionEl);
@@ -91,9 +103,9 @@ var welcomeScreen = function () {
     startBtn.addEventListener("click", displayQuestion);
 }
 
-welcomeScreen();
+// welcomeScreen();
 
-pageContentEl.addEventListener("click", inputEval)
+// pageContentEl.addEventListener("click", inputEval)
 for (var i = 0; i < questionAnswerArr.length; i++) {
-    displayQuestion();
+    pageContentEl.addEventListener("click", displayQuestion)
 }
