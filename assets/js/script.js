@@ -92,8 +92,3 @@ var welcomeScreen = function () {
 }
 
 welcomeScreen();
-
-pageContentEl.addEventListener("click", inputEval)
-for (var i = 0; i < questionAnswerArr.length; i++) {
-    displayQuestion();
-}
