@@ -124,9 +124,6 @@ var showHighScores = function () {
 
 }
 
-<<<<<<< HEAD
-welcomeScreen();
-=======
 var resetQuiz = function () {
     timeVal = 75;
     questionIndex = 0;
@@ -138,4 +135,3 @@ startBtnEl.addEventListener("click", startQuiz);
 submitBtnEl.addEventListener("click", showHighScores);
 startOverBtnEl.addEventListener("click", resetQuiz);
 
->>>>>>> new-direction
