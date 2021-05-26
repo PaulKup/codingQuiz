@@ -1,0 +1,38 @@
+.hide {
+    display: none !important; 
+ }
+
+ .timer {
+     font-size: 18px;
+     text-align: center;
+ }
+
+h1 {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    color: rgb(134,65,199);
+}
+
+p {
+    font-size: 26px;
+}
+
+#welcome-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#answers {
+    display: flex;
+    flex-direction: column;
+}
+    
+
+#answers, button {
+    margin: 8px;
+    background-color: #caf7e3;
+    font-size: 18px;
+    border-radius: 10%;
+}

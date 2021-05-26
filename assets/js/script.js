@@ -1,16 +1,20 @@
-var pageContentEl = document.querySelector("#page-content");
 var timeVal = 75;
 var questionIndex = 0;
 var timerEl = document.querySelector(".timer");
+var welcomePageEl = document.getElementById("welcome-page");
+var questionsPageEl = document.getElementById("questions-page");
+var resultsPageEl = document.getElementById("results-page");
+var highscoresPageEl = document.getElementById("highscores-page");
+var highscoresEl = document.getElementById("highscores");
+var questionEl = document.getElementById("question");
+var startBtnEl = document.getElementById("startBtn");
+var submitBtnEl = document.getElementById("submit");
+var startOverBtnEl = document.getElementById("start-over");
+var timerValue;
 var questionAnswerArr = [
     {
-        "title": "Welcome to a JavaScript Quiz",
-        "message": "This is a timed JavaScript quiz.  You will have 75 seconds to answer 6 questions.  Good Luck!",
-        "begin" : "Begin"
-    },
-    {
         "q": "Arrays in JavaScript are 1 indexed",
-        "a": "true",
+        "a": "false",
         "c": ["true", "false"]
     },
     {
@@ -40,72 +44,94 @@ var questionAnswerArr = [
     }
 ]
 
-var timerValue = setInterval(function() {
-    if (timeVal > 1) {
-        timerEl.textContent = "Time: " + timeVal;
-        timeVal--;
-    } else if (timeVal == 0) {
-        clearInterval(timerValue);
-    }
-}, 1000);
-
-// question argument (num) to know which question to access in array
-var displayQuestion = function () {
-    pageContentEl.innerHTML = "";
-    if (questionIndex == 0) {
-        var welcomeEl = document.createElement("h1");
-        var descriptionEl = document.createElement("p");
-        var startBtn = document.createElement("button");
-        welcomeEl.textContent = questionAnswerArr[0].title;
-        descriptionEl.textContent = questionAnswerArr[0].message;
-        startBtn.textContent = questionAnswerArr[0].begin;
-    } else if (timeVal > 0 && questionIndex < questionAnswerArr.length) {
-    var questionEl = document.createElement("div");
-    var choiceListEl = document.createElement("ul");
-    questionEl.innerText = questionAnswerArr[questionIndex].q;
-    questionEl.className = "question";
-    pageContentEl.appendChild(questionEl);
-    for (var i = 0; i < questionAnswerArr[questionIndex].c.length; i++) {
-        var choicesEl = document.createElement("li");
-        var choiceBtn = document.createElement("button");
-        choiceBtn.id = i;
-        choiceBtn.className = "answer-button"
-        choiceBtn.textContent = questionAnswerArr[questionIndex]["c"][i];
-        choiceBtn.value = questionAnswerArr[questionIndex]["c"][i];
-        choicesEl.appendChild(choiceBtn);
-        choiceListEl.appendChild(choicesEl);
-    }
-    pageContentEl.appendChild(choiceListEl);
-
-
+var startQuiz = function () {
+    welcomePageEl.setAttribute("class", "hide");
+    questionsPageEl.removeAttribute("class");
+    timerValue = setInterval(function() {
+        if (timeVal >= 1) {
+            timerEl.textContent = "Time: " + timeVal;
+            timeVal--;
+        } else if (timeVal == 0) {
+            clearInterval(timerValue);
+        }
+    }, 1000);
+    displayQuestion();
 }
+
+var displayQuestion = function () {
+    var currentQuestion = questionAnswerArr[questionIndex];
+    questionEl.textContent = currentQuestion.q;
+    var answersEl = document.getElementById("answers");
+    answersEl.innerHTML = "";
+    
+    currentQuestion.c.forEach(function(choice, i) {
+        var answer = document.createElement("button");
+        answer.textContent = choice;
+        answer.setAttribute("value", choice);
+        answer.setAttribute("id", "answer" + i);
+        answer.onclick = answerSelect;
+        answersEl.appendChild(answer);
+    })
+};
+
+
 // evaluate input from user to determine an answer was clicked and if its the correct answer
-var inputEval = function (event) {
-    if (event.target.className === "answer-button") {
-        if (event.target.value === questionAnswerArr[questionIndex]["a"]) {
-            return true;
+var answerSelect = function (event) {
+    if (event.target.innerText !== questionAnswerArr[questionIndex].a) {
+        if (timeVal < 10) {
+            timeVal = 0;
+        } else {
+            timeVal = timeVal - 10;
         }
     }
+    questionIndex++;
+    if (questionIndex === questionAnswerArr.length) {
+        clearInterval(timerValue);
+        endQuiz();
+    } else {
+        displayQuestion();
+    }
+
+};
+
+var endQuiz = function () {
+
+    questionsPageEl.setAttribute("class", "hide");
+    resultsPageEl.removeAttribute("class");
+
+    var scoreEl = document.getElementById("score");
+    scoreEl.textContent = timeVal;
+}
+
+var showHighScores = function () {
+    var initialsEl = document.getElementById("initials");
+    var scores = JSON.parse(window.localStorage.getItem("highscores")) || [];
+    var highscore = {
+        score: timeVal,
+        initials: initialsEl.value.trim()
+    }
+    scores.push(highscore);
+    window.localStorage.setItem("highscores", JSON.stringify(scores));
+    resultsPageEl.setAttribute("class", "hide");
+    highscoresPageEl.removeAttribute("class");
+
+    scores = JSON.parse(window.localStorage.getItem("highscores"));
+    scores.forEach(function(score, i) {
+        var scoreItemEl = document.createElement("li");
+        scoreItemEl.textContent = scores[i].initials + ': ' + scores[i].score;
+        highscoresEl.appendChild(scoreItemEl);
+    })
 
 }
 
+var resetQuiz = function () {
+    timeVal = 75;
+    questionIndex = 0;
+    highscoresPageEl.setAttribute("class", "hide");
+    welcomePageEl.removeAttribute("class");
 
-var welcomeScreen = function () {
-    
-    welcomeEl.textContent = "Coding Quiz Challenge";
-    
-    descriptionEl.textContent = "This is a timed JavaScript quiz.  You will have 75 seconds to answer 6 questions.  Good Luck!";
-    
-    startBtn.textContent = "Start Quiz";
-    pageContentEl.appendChild(welcomeEl);
-    pageContentEl.appendChild(descriptionEl);
-    pageContentEl.appendChild(startBtn);
-    startBtn.addEventListener("click", displayQuestion);
 }
+startBtnEl.addEventListener("click", startQuiz);
+submitBtnEl.addEventListener("click", showHighScores);
+startOverBtnEl.addEventListener("click", resetQuiz);
 
-// welcomeScreen();
-
-// pageContentEl.addEventListener("click", inputEval)
-for (var i = 0; i < questionAnswerArr.length; i++) {
-    pageContentEl.addEventListener("click", displayQuestion)
-}
