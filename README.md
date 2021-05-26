@@ -3,4 +3,4 @@ A short timed quiz on basic JavaScript.  The time is reduced for incorrect answe
 ## deployed application
 https://paulkup.github.io/codingQuiz/
 ## application image
-![screenshot of webpage](./assets/images/pic.png)
+![screenshot of webpage]()
